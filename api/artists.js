@@ -129,4 +129,24 @@ artistsRouter.put('/:artistId', (req, res, next)=>{
        });
 });
 
+/*delete handler, however insted of actually deleting a row we will update the is_currently employed values to 0 meaning the person is unemployed */ 
+artistsRouter.delete('/:artistId', (req, res, next)=>{
+    //use UPDATE to update Artist table with the given id from the req.param.artistId
+    const sql = 'UPDATE Artist SET is_currently_employed = 0 WHERE Artist.id = $artistId';
+    const objectValues = {$artistId: req.params.artistId};
+
+    db.run(sql, objectValues, (error)=>{
+        if(error){
+            next(error);
+        }else{
+            db.get(`SELECT * FROM Artist WHERE Artist.id = ${req.params.artistId}`,
+            (error, row) => {
+              //send the updated artist with status code of 200
+              res.status(200).json({artist: row});
+            });
+        }
+    })
+
+})
+
 module.exports = artistsRouter;
