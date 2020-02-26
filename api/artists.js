@@ -44,10 +44,50 @@ artistsRouter.get('/', (req, res, next)=>{
 });
 
 
-//add get handler for 'api/artist/:artistId
+//add get handler at 'api/artist/:artistId
 artistsRouter.get('/:artistId', (req, res, next) => {
     //the router param handles error handling and receives the artist at req.artist
     res.status(200).json({artist: req.artist});
 });
+
+//add post handler at /
+artistsRouter.post('/', (req, res, next)=>{
+    //select fields from artist object
+    const name = req.body.artist.name;
+    const dateOfBirth = req.body.artist.dateOfBirth;
+    const biography = req.body.artist.biography;
+
+    //check if is currently employed is set to 1 if not do it!
+    //Use ternary operator
+    const isCurrentlyEmployed = req.body.artist.isCurrentlyEmployed === 0 ? 0 : 1;
+
+    //check if they are present
+    if(!name || !dateOfBirth || !biography){
+       return res.send(400);
+    }
+
+    const sql = 'INSERT INTO Artist(name, date_of_birth, biography, is_currently_employed) VALUES($name, $dateOfBirth, $biography, $isCurrentlyEmployed)';
+    const objectValues = {
+        $name: name,
+        $dateOfBirth: dateOfBirth,
+        $biography: biography,
+        $isCurrentlyEmployed: isCurrentlyEmployed
+    };
+
+    //Insert a new artist 
+    db.run(sql, objectValues, function(error){
+        //if there was an error then pass it to errorhandler
+        if(error){
+            next(error);
+        } else {
+        //otherwise select the newly created artist using lastID
+            db.get(`SELECT * FROM Artist WHERE Artist.id = ${this.lastID}`, (error, row)=>{
+                //send it in the response body with 201 status code
+                res.status(201).json({artist:row});
+            });
+        }
+    });
+
+})
 
 module.exports = artistsRouter;
