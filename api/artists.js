@@ -10,13 +10,12 @@ const db = new sqlite3.Database(process.env.TEST_DATABASE || './database.sqlite'
 
 //add router param
 artistsRouter.param('artistId', (req, res, next, artistId)=>{
-    db.get('SELECT * FROM Artist WHERE Artist.id=$artistId',
-    {
-        $artistId:artistId
-    },(error, artist)=>{
+    const sql = 'SELECT * FROM Artist WHERE Artist.id=$artistId';
+    const values = {$artistId: artistId}
+    db.get(sql, values, (error, artist)=>{
         if(error){
             next(error)
-        }else if(artits){
+        } else if(artist){
             //attach to request object as artist
             req.artist = artist;
             //move on to next function 
@@ -24,7 +23,7 @@ artistsRouter.param('artistId', (req, res, next, artistId)=>{
         } else{
             res.sendStatus(404);
         }
-    })
+    });
 });
 
 
@@ -46,9 +45,9 @@ artistsRouter.get('/', (req, res, next)=>{
 
 
 //add get handler for 'api/artist/:artistId
-artistsRouter.get(':artistId', (req, res, next)=>{
+artistsRouter.get('/:artistId', (req, res, next) => {
     //the router param handles error handling and receives the artist at req.artist
     res.status(200).json({artist: req.artist});
-})
+});
 
 module.exports = artistsRouter;
