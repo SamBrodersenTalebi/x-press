@@ -88,6 +88,45 @@ artistsRouter.post('/', (req, res, next)=>{
         }
     });
 
-})
+});
+
+//put handler at /:artistId
+artistsRouter.put('/:artistId', (req, res, next)=>{
+       //select fields from artist object
+       const name = req.body.artist.name;
+       const dateOfBirth = req.body.artist.dateOfBirth;
+       const biography = req.body.artist.biography;
+   
+       //check if is currently employed is set to 1 if not do it!
+       //Use ternary operator
+       const isCurrentlyEmployed = req.body.artist.isCurrentlyEmployed === 0 ? 0 : 1;
+   
+       //check if they are present
+       if(!name || !dateOfBirth || !biography){
+          return res.send(400);
+       }
+
+       //use UPDATE to update Artist table with the given id from the req.param.artistId
+       const sql = 'UPDATE Artist SET name = $name, date_of_birth = $dateOfBirth, biography = $biography, is_currently_employed = $isCurrentlyEmployed WHERE Artist.id = $artistId';
+       const objectValues = {
+        $name: name,
+        $dateOfBirth: dateOfBirth,
+        $biography: biography,
+        $isCurrentlyEmployed: isCurrentlyEmployed,
+        $artistId: req.params.artistId
+    };
+    
+       db.run(sql, objectValues, function(error){
+           if(error){
+               next(error);
+           }else{
+            db.get(`SELECT * FROM Artist WHERE Artist.id = ${req.params.artistId}`,
+            (error, row) => {
+                //send the updated artist with status code of 200
+              res.status(200).json({artist: row});
+            });
+           }
+       });
+});
 
 module.exports = artistsRouter;
