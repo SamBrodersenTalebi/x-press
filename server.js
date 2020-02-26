@@ -11,3 +11,8 @@ const app = express();
 
 //Variable representing PORT 
 const PORT = process.env.PORT || 4000;
+
+//Use body-parser JSON, errorhandler, morgan and CORS middleware functions:
+app.use(morgan('tiny'));
+app.use(bodyParser.json());
+app.use(cors());
