@@ -8,3 +8,6 @@ var errorhandler = require('errorhandler');
 
 //create instance of express app:
 const app = express();
+
+//Variable representing PORT 
+const PORT = process.env.PORT || 4000;
