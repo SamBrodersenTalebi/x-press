@@ -17,6 +17,9 @@ app.use(morgan('tiny'));
 app.use(bodyParser.json());
 app.use(cors());
 
+//mount router at all routes starting at '/api':
+app.use('/api', apiRouter);
+
 //use errorhandler 
 app.use(errorhandler());
 
