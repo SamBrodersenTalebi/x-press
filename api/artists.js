@@ -24,4 +24,23 @@ artistsRouter.get('/', (req, res, next)=>{
     });
 });
 
+//add router param
+artistsRouter.param('artistId', (req, res, next, artistId)=>{
+    db.get('SELECT * FROM Artist WHERE id=$id',
+    {
+        $id:id
+    },(error, artist)=>{
+        if(error){
+            next(error)
+        }else if(artits){
+            //attach to request object as artist
+            req.artist = artist;
+            //move on to next function 
+            next();
+        } else{
+            res.sendStatus(404);
+        }
+    })
+});
+
 module.exports = artistsRouter;
