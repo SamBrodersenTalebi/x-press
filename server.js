@@ -16,3 +16,14 @@ const PORT = process.env.PORT || 4000;
 app.use(morgan('tiny'));
 app.use(bodyParser.json());
 app.use(cors());
+
+//use errorhandler 
+app.use(errorhandler());
+
+//Start server on PORT:
+app.listen(PORT, ()=>{
+    console.log(`Server is listening at port ${PORT}`);
+});
+
+//Export app (for use in test file):
+module.exports = app
