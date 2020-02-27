@@ -71,6 +71,29 @@ seriesRouter.post('/', (req, res, next)=>{
             })
         }
     })
+});
+
+seriesRouter.put('/:seriesId', (req, res, next) => {
+    const name = req.body.series.name;
+    const description = req.body.series.description;
+
+    //check if they are present
+    if(!name || !description){
+        return res.send(400);
+    }
+
+    const sql = "UPDATE Series SET name = $name, description = $description";
+    const values = {$name: name, $description: description};
+    db.run(sql, values, function(error){
+        if(error){
+            next(error);
+        }else{
+            //req.param is an object containing parameter values parsed from the URL path
+            db.get(`SELECT * FROM Series WHERE Series.id = ${req.params.seriesId}`,(error, row)=>{
+                res.status(200).json({series:row});
+            })
+        }
+    })
 })
 
 //export router 
