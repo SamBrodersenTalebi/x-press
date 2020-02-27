@@ -10,9 +10,6 @@ const sqlite3 = require('sqlite3');
 //it will be used for testing
 const db = new sqlite3.Database(process.env.TEST_DATABASE || './database.sqlite')
 
-//Mount issuesRouter at /:seriesId/issues
-seriesRouter.use('/:seriesId/issues', issuesRouter);
-
 //Router param for handling the seriesId parameter
 seriesRouter.param('seriesId', (req, res, next, seriesId)=>{
     const sql = "SELECT * FROM Series WHERE Series.id = $seriesId";
@@ -28,7 +25,10 @@ seriesRouter.param('seriesId', (req, res, next, seriesId)=>{
             res.sendStatus(404);
         }
     })
-})
+});
+
+//Mount issuesRouter at /:seriesId/issues
+seriesRouter.use('/:seriesId/issues', issuesRouter);
 
 
 //get handler at /
