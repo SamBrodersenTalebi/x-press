@@ -45,5 +45,33 @@ seriesRouter.get('/:seriesId', (req, res, next)=>{
     res.status(200).json({series: req.series});
 });
 
+//post handler at /
+seriesRouter.post('/', (req, res, next)=>{
+    const name = req.body.series.name;
+    const description = req.body.series.description;
+
+    //check if they are present
+    if(!name || !description){
+        return res.send(400);
+    }
+
+    const sql = "INSERT INTO Series(name, description) VALUES($name, $description)";
+    const values = {$name: name, $description: description};
+
+    //insert into series table
+    db.run(sql, values, function(error){
+        //if there was an error then pass it to errorhandler
+        if(error){
+            next(error);
+        }else{
+            //select newly created row with this.lastId
+            db.get(`SELECT * FROM Series Where Series.id = ${this.lastID}`, (error, row)=>{
+                //send it in the response body with 201 status code
+                res.status(201).json({series:row});
+            })
+        }
+    })
+})
+
 //export router 
 module.exports = seriesRouter;
