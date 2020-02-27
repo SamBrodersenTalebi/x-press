@@ -1,3 +1,4 @@
+// REMEMBER TO RUN "node migration.js" once all tables are set up!
 //import sqlite3 
 const sqlite3 = require('sqlite3');
 
