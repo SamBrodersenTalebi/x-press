@@ -98,6 +98,28 @@ seriesRouter.put('/:seriesId', (req, res, next) => {
             })
         }
     })
+});
+
+//delete handler 
+
+seriesRouter.delete('/:seriesId', (req, res, next)=>{
+
+    //This route should check to ensure the specified series has no related issues in the database
+    const issueSql = "SELECT * FROM Issue WHERE Issue.series_id = $seriesId";
+    const value = {$seriesId: req.params.seriesId};
+
+    db.get(issueSql, value, (error,row)=>{
+        if(error){
+            next(error);
+        }else if(row){
+            return res.sendStatus(400);
+        }else{
+            const sql = `DELETE FROM Series WHERE Series.id = ${req.params.seriesId}`;
+            db.run(sql, function(error){
+                res.sendStatus(204);
+            })
+        }
+    })
 })
 
 //export router 
