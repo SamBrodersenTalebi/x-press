@@ -120,4 +120,15 @@ issuesRouter.put('/:issueId', (req, res, next)=>{
     })
 });
 
+issuesRouter.delete('/:issueId', (req, res, next)=>{
+    const sql = `DELETE FROM Issue WHERE Issue.id = ${req.params.issueId}`;
+    db.run(sql, function(error){
+        if(error){
+            next(error)
+        }else{
+            res.sendStatus(204);
+        }
+    })
+})
+
 module.exports = issuesRouter;
