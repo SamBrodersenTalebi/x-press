@@ -39,5 +39,11 @@ seriesRouter.get('/', (req, res, next)=>{
     })
 });
 
+//get handler /:seriesId
+seriesRouter.get('/:seriesId', (req, res, next)=>{
+    //the router param handles error handling and receives the series at req.series
+    res.status(200).json({series: req.series});
+});
+
 //export router 
 module.exports = seriesRouter;
