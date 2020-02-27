@@ -54,8 +54,8 @@ issuesRouter.post('/', (req, res, next)=>{
         if(error){
             next(error);
         } else{
-            if(!name || !issueNumber || !publicationDate){
-                return res.send(400);
+            if(!name || !issueNumber || !publicationDate || !row){
+                return res.sendStatus(400);
             }
             const sql = "INSERT INTO Issue(name, issue_number, publication_date, artist_id, series_id) VALUES($name, $issueNumber, $publicationDate, $artistId, $seriesId)";
             const values = {
@@ -79,6 +79,45 @@ issuesRouter.post('/', (req, res, next)=>{
         }
     })
     
+});
+
+//put handler for :issueId
+issuesRouter.put('/:issueId', (req, res, next)=>{
+    //This route should return a 400 response if any required fields are missing
+    const name = req.body.issue.name;
+    const issueNumber =req.body.issue.issueNumber;
+    const publicationDate =req.body.issue.publicationDate;
+    const artistId =req.body.issue.artistId;
+    const artistSql = "SELECT * FROM Artist WHERE Artist.id = $artistId";
+    const artistValue = {$artistId: artistId};
+    
+    db.get(artistSql, artistValue, (error, row)=>{
+        if(error){
+            next(error);
+        }else{
+            if(!name || !issueNumber || !publicationDate || !row){
+                return res.sendStatus(400);
+            }
+
+            const sql = "UPDATE Issue SET name = $name, issue_number = $issueNumber, publication_date = $publicationDate, artist_id = $artistId WHERE Issue.id = $issueId";
+            const values = {
+                $name: name,
+                $issueNumber: issueNumber,
+                $publicationDate: publicationDate,
+                $artistId: row,
+                $issueId: req.params.issueId
+            };
+            db.run(sql, values, function(error){
+                if(error){
+                    next(error);
+                }else{
+                    db.get(`SELECT * FROM Issue WHERE Issue.id = ${req.params.issueId}`, (error,row)=>{
+                        res.status(200).json({issue:row});
+                    })
+                }
+            })
+        }
+    })
 });
 
 module.exports = issuesRouter;
