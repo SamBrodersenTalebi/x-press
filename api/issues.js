@@ -9,6 +9,21 @@ const issuesRouter = express.Router({mergeParams: true});
 const sqlite3 = require('sqlite3');
 const db = new sqlite3.Database(process.env.TEST_DATABASE || './database.sqlite')
 
+//router param for :issueId
+//param checks to see if an issue was supplied with an issue ID 
+issuesRouter.param('issueId', (req, res, next, issueId)=>{
+    const sql = 'SELECT * FROM Issue WHERE Issue.id=$issueId';
+    const values = {$IssueId: issueId};
+    db.get(sql, values, (error,row)=>{
+        if(error){
+            next(error);
+        }else if(row){
+            next();
+        }else{
+            res.sendStatus(404);
+        }
+    })
+})
 
 //get handler at /
 issuesRouter.get('/', (req, res, next)=> {
