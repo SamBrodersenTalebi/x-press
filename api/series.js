@@ -10,5 +10,18 @@ const sqlite3 = require('sqlite3');
 const db = new sqlite3.Database(process.env.TEST_DATABASE || './database.sqlite')
 
 
+//get handler at /
+
+seriesRouter.get('/', (req, res, next)=>{
+    const sql = "SELECT * FROM SERIES";
+    db.all(sql, (error, rows)=>{
+        if(error){
+            next(error);
+        }else{
+            res.status(200).json({series:rows});
+        }
+    })
+});
+
 //export router 
 module.exports = seriesRouter;
