@@ -10,7 +10,7 @@ const seriesRouter = require('./series.js');
 
 //mount it at /artists
 apiRouter.use('/artists', artistsRouter);
-apiRouter.use('/series', seriesRouter)
+apiRouter.use('/series', seriesRouter);
 
 module.exports = apiRouter
 
